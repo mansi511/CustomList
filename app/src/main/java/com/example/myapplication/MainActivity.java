@@ -1,6 +1,9 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,9 +39,24 @@ public class MainActivity extends AppCompatActivity {
 
         getdata();
 
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                List_Data listData=list_data.get(i);
+
+                final String url_own=listData.getOwnerUrl();
+                Intent intent=new Intent(MainActivity.this,Detail.class);
+                intent.putExtra("img",url_own);
+                startActivity(intent);
+
+            }
+        });
+
     }
 
     private void getdata() {
+
+
         request=new JsonArrayRequest(HI, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -56,8 +74,12 @@ public class MainActivity extends AppCompatActivity {
                         // Repo name of the user
                         String repoName=jsonObject.getString("name");
 
+
+                        JSONObject new_owner = jsonObject.getJSONObject("owner");
+                        String Url_owner = new_owner.getString("url");
+
                         // List_Data listData=new List_Data(repoName,ownerName);
-                        list_data.add(new List_Data(repoName,ownerName));
+                        list_data.add(new List_Data(repoName,ownerName,Url_owner));
 
                     } catch (JSONException e) {
                         e.printStackTrace();
